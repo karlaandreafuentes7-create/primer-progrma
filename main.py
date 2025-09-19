@@ -2,32 +2,35 @@ from models.Containers_models import Containers
 from models.Box_models import Box
 
 class Automatizar:
+    def __init__(self):
+        ...
 
-    def __init__(self, contenedor: Containers, caja: Box):
-        self.contenedor = contenedor
-        self.caja = caja
-    
-    def calcular(self):
-        cajas_altura = int(self.contenedor.altura / self.caja.altura)
-        cajas_ancho = int(self.contenedor.ancho / self.caja.ancho)
+    def calcular_cantidad_cajas(self, contenedor, caja):
+        if caja.altura <= 0 or caja.ancho <= 0:
+            return 0, 0
+        cajas_altura = int(contenedor.altura / caja.altura)
+        cajas_ancho = int(contenedor.ancho / caja.ancho)
+        return cajas_altura, cajas_ancho
 
-        total_cajas = cajas_altura * cajas_ancho
-
-        tamaño_contenedor = self.contenedor.altura * self.contenedor.ancho
-        tamaño_caja = self.caja.altura * self.caja.ancho
+    def calcular_espacio_ocupado(self, contenedor, caja, total_cajas):
+        tamaño_contenedor = contenedor.altura * contenedor.ancho
+        tamaño_caja = caja.altura * caja.ancho
         espacio_ocupado = total_cajas * tamaño_caja
-    
 
         if tamaño_contenedor > 0:
-            espacio_lleno = (espacio_ocupado / tamaño_contenedor) * 100
-        else:
-            espacio_lleno = 0
+            return (espacio_ocupado / tamaño_contenedor) * 100
+        return 0
+
+    def calcular(self, contenedor, caja):
+        cajas_altura, cajas_ancho = self.calcular_cantidad_cajas(contenedor, caja)
+        total_cajas = cajas_altura * cajas_ancho
+        porcentaje = self.calcular_espacio_ocupado(contenedor, caja, total_cajas)
 
         return {
             "cajas_altura": cajas_altura,
             "cajas_ancho": cajas_ancho,
             "total_cajas": total_cajas,
-            "porcentaje": espacio_lleno
+            "porcentaje": porcentaje
         }
 
 
@@ -53,10 +56,11 @@ def main():
     (contenedor_souvenirs, caja_souvenirs),
     ]
 
+    auto = Automatizar()
+
 
     for cont, caja in pares:
-        auto = Automatizar(cont, caja)
-        resultado = auto.calcular()
+        resultado = auto.calcular(cont, caja)
         print(f"Contenedor {cont.tipo}:")
         print(f" - Cajas por altura: {resultado['cajas_altura']}")
         print(f" - Cajas por ancho: {resultado['cajas_ancho']}")
